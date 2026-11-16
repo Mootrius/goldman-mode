@@ -1,4 +1,4 @@
-<h1 align="center">Goldman Mode</h1>
+<h3 align="center">Goldman Mode</h3>
 
 <p align="center">Unlock Gielinor one area at a time by earning and spending Goldman GP!</p>
 
