@@ -12,7 +12,7 @@
 
 ## Area costs
 
-There are 400+ hand-drawn areas built in to the plugin that are priced based on a combination of their size, usefulness, amenities, danger, and proximity to central locations. You can adjust the cost multiplier up or down to decide how hard you want the game-mode to be. The base cost of areas varies from thousands of Goldman GP to millions per area, and a full breakdown can be found [here](https://docs.google.com/spreadsheets/d/13WG-S-lcwAKKUWXfIKOT8Aw8vdFgFw1B1tN9dkwwMdU/edit?usp=sharing).
+There are 400+ hand-drawn areas built in to the plugin that are priced based on a combination of their size, usefulness, amenities, danger, and proximity to central locations. You can adjust the cost multiplier up or down to decide how hard you want the game-mode to be. The base cost of areas varies from thousands of Goldman GP to millions, and a full breakdown can be found [here](https://docs.google.com/spreadsheets/d/13WG-S-lcwAKKUWXfIKOT8Aw8vdFgFw1B1tN9dkwwMdU/edit?usp=sharing).
 
 ## GP payouts
 
