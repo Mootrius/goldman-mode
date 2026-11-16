@@ -17,3 +17,7 @@ There are 400+ hand-drawn areas built in to the plugin that are priced based on 
 ## GP payouts
 
 You can earn Goldman GP via gaining experience, killing NPCs, gaining skill and combat levels, questing, completing diary tasks and CAs, and obtaining collection logs. You can adjust the payout multiplier up or down to decide how hard you want the game-mode to be. The base payout of GP varies generally with difficulty and rarity, and a full breakdown can be found [here](https://docs.google.com/spreadsheets/d/13WG-S-lcwAKKUWXfIKOT8Aw8vdFgFw1B1tN9dkwwMdU/edit?usp=sharing).
+
+## Plugin support
+
+To submit a bug, request a feature, or ask a question about the plugin, feel free to join my [Discord server](https://discord.gg/mootrius) and let me know how I can help!
