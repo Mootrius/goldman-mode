@@ -152,9 +152,7 @@ public class GoldmanBarrierOverlay extends Overlay
 					}
 					for (BarrierGeometry.Piece pc : pieces)
 					{
-						// a barrier stands where exactly one side is locked, on the outline of the locked area
-						boolean l1 = state.isLockedIdx(pc.o1), l2 = state.isLockedIdx(pc.o2);
-						if (l1 == l2 || pc.ring != (l1 ? pc.o1 : pc.o2))
+						if (!state.isLockedBorder(pc))
 						{
 							continue;
 						}

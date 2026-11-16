@@ -226,12 +226,12 @@ public class GoldmanState
 		}
 	}
 
-/**
- * Turns xp into whole gp, carrying the rounding leftover so nothing is lost (at 23 xp per gp, 12 xp pays 1 gp and
- * leaves the pool at -11).
- *
- * @return {gp earned, new pool}
- */
+	/**
+	 * Turns xp into whole gp, carrying the rounding leftover so nothing is lost (at 23 xp per gp, 12 xp pays 1 gp and
+	 * leaves the pool at -11).
+	 *
+	 * @return {gp earned, new pool}
+	 */
 	static long[] convertXp(long pool, long xp, int xpPerGp)
 	{
 		return convertXp(pool, xp, Math.max(1, xpPerGp), 1.0);
@@ -273,11 +273,11 @@ public class GoldmanState
 		return gp;
 	}
 
-/**
- * Pays something that can only be paid once, claimed under {@code key} (null for something that can repeat).
- *
- * @return the gp paid, 0 if it had been paid before
- */
+	/**
+	 * Pays something that can only be paid once, claimed under {@code key} (null for something that can repeat).
+	 *
+	 * @return the gp paid, 0 if it had been paid before
+	 */
 	public long award(String key, long gp)
 	{
 		if (gp <= 0)
@@ -371,7 +371,17 @@ public class GoldmanState
 		return idx >= 0 && idx < l.length && l[idx];
 	}
 
-/** The area's price from the areas file times the "Area costs" multiplier, rounded to 100 (65 gp a tile if the file has none; free areas cost 0). */
+	/** Whether a barrier stands on this piece of outline: exactly one side is locked and the piece is that area's border. */
+	public boolean isLockedBorder(BarrierGeometry.Piece pc)
+	{
+		boolean l1 = isLockedIdx(pc.o1), l2 = isLockedIdx(pc.o2);
+		return l1 != l2 && pc.ring == (l1 ? pc.o1 : pc.o2);
+	}
+
+	/**
+	 * The area's price from the areas file times the "Area costs" multiplier, rounded to 100 (65 gp a tile if the
+	 * file has none; free areas cost 0).
+	 */
 	public long costOf(GoldmanArea a)
 	{
 		if (isFree(a))
