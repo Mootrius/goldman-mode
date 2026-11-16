@@ -28,10 +28,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-/**
- * Draws a low barrier along every tile edge where a locked tile meets a tile that is not locked,
- * i.e. around the outside of each locked area: the line you are not supposed to cross.
- */
+/** Draws a low barrier along the outside of every locked area: the line you are not supposed to cross. */
 @Singleton
 public class GoldmanBarrierOverlay extends Overlay
 {

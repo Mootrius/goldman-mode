@@ -15,11 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * What every quest, diary task, combat achievement and collection log item pays, in Goldman GP.
- * The numbers come from the economy spreadsheet (payouts.json is generated from its Quests, Diaries,
- * Combat Achievements and Collection Log sheets).
- */
+/** What every quest, diary task, combat achievement and collection log item pays, from the economy spreadsheet (payouts.json). */
 final class Payouts
 {
 	/** gp for one task and gp for finishing the tier, by tier name (lower case) */

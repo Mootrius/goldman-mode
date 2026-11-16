@@ -25,10 +25,9 @@ import net.runelite.client.input.MouseAdapter;
 import net.runelite.client.input.MouseWheelListener;
 
 /**
- * The map, drawn over the whole game view by {@link GoldmanMapOverlay}: smooth zoom (down to the whole world, up to
- * single pixels), smooth drag/keyboard scrolling, Goldman area borders and a tooltip with the name and
- * price of the area under the mouse. While it is open it takes every mouse and key event so nothing reaches the game.
- * Events come from the AWT thread and drawing from the client thread, so everything here is synchronized.
+ * The map drawn over the whole game view: smooth zoom and scrolling, area borders and a price tooltip. While open it
+ * takes every mouse and key event. Events arrive on the AWT thread and drawing on the client thread, so everything
+ * here is synchronized.
  */
 final class GoldmanMapView
 {
@@ -417,7 +416,6 @@ final class GoldmanMapView
 
 	// ------------------------------------------------------------------ painting
 
-	/** Draw the whole map into g, w x h pixels. */
 	synchronized void render(Graphics2D g0, int w, int h)
 	{
 		Graphics2D g = (Graphics2D) g0.create();

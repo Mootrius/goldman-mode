@@ -19,21 +19,8 @@ import net.runelite.client.util.QuantityFormatter;
 import net.runelite.client.util.Text;
 
 /**
- * Goldman GP for quests, achievement diary tasks, combat achievements and collection log items.
- * (Experience and level-ups are paid in {@link GoldmanModePlugin}.) Everything here runs on the game thread.
- *
- * <ul>
- * <li><b>Quests</b>: when the quest complete scroll opens, the quest named on it is paid.</li>
- * <li><b>Diary tasks</b>: the game keeps a count of finished tasks for each area and tier; every task the count
- * goes up by is paid. The tier's bonus is paid when the game says "you have completed all of the easy tasks in the
- * Lumbridge &amp; Draynor area" (a chat message or the "Click here to continue" box), or when the area's tier is marked complete.</li>
- * <li><b>Combat achievements</b>: each "you've completed a ... combat task" message pays that tier's task amount;
- * a tier's bonus is paid when the game says "you've completed enough Combat Achievement tasks to unlock Easy Tier
- * rewards", or when your points reach the points that unlock that tier.</li>
- * <li><b>Collection log</b>: each "New item added to your collection log" message pays that item.</li>
- * </ul>
- * Anything you already had when you logged in is never paid, only what you finish afterwards, and each quest,
- * item, task and tier pays only once.
+ * Goldman GP for quests, diary tasks and tiers, combat achievements and collection log items, read from the
+ * game's messages and widgets. Anything you already had at login is never paid, and each thing pays only once.
  */
 @Slf4j
 @Singleton
@@ -164,7 +151,6 @@ public class GoldmanAchievements
 
 	// ------------------------------------------------------------------ diaries and combat achievement tiers
 
-	/** Every game tick. */
 	public void onGameTick()
 	{
 		if (client.getGameState() != GameState.LOGGED_IN)
@@ -343,7 +329,6 @@ public class GoldmanAchievements
 		return m.matches() ? m.group(1).trim() : null;
 	}
 
-	/** Every chat message. */
 	public void onChatMessage(ChatMessageType type, String message)
 	{
 		if (message == null)

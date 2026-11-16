@@ -20,10 +20,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * The map pictures. The world is cut into 256x256 pixel squares at several zoom levels, from z = -3 (one square is
- * 2048 tiles wide) to z = 4 (16 tiles wide, 16 pixels per tile). Squares are fetched when they come into view, kept on
- * disk (so each is only downloaded once, ever) and the newest views are loaded first.
- * Only the ones asked for since the last {@link #endFrame()} are fetched, so scrolling past something never queues it.
+ * The map pictures: 256x256 pixel squares at several zoom levels (z = -3, 2048 tiles a side, to z = 4, 16 pixels a
+ * tile), fetched when they come into view and cached on disk. Only squares asked for since the last {@link #endFrame()}
+ * are fetched, so scrolling past something never queues it.
  */
 @Slf4j
 final class MapTiles

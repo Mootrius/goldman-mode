@@ -95,7 +95,6 @@ public class GoldmanModePlugin extends Plugin
 	@Inject
 	private OkHttpClient okHttpClient;
 
-	// ---- the world map window (built the first time it is opened)
 	private volatile WorldPoint playerPos;
 	private MapRegions mapRegions;
 	private MapTiles mapTiles;
@@ -333,7 +332,7 @@ public class GoldmanModePlugin extends Plugin
 		}
 	}
 
-	/** Writes "+N gp for what" in the chatbox (on the client thread) if payout messages are on. */
+	/** Writes "+N gp for what" in the chatbox. */
 	private void announce(ChatMessageType type, long gp, String what)
 	{
 		if (gp > 0)

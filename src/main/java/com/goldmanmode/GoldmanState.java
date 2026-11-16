@@ -16,10 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
 import net.runelite.client.config.ConfigManager;
 
-/**
- * Everything about Goldman progress: the areas, which are unlocked, and the GP balance.
- * Persisted in the RuneLite profile config (group "goldmanmode").
- */
+/** The areas, which of them are unlocked, and the GP balance; persisted in the RuneLite profile config. */
 @Slf4j
 @Singleton
 public class GoldmanState
@@ -229,12 +226,12 @@ public class GoldmanState
 		}
 	}
 
-	/**
-	 * Turns experience into whole gp, rounding to the nearest gp and carrying the leftover so nothing is lost:
-	 * with 23 xp per gp, 12 xp pays 1 gp (the pool goes to -11) and the next 11 xp pays nothing.
-	 *
-	 * @return {gp earned, new pool}
-	 */
+/**
+ * Turns xp into whole gp, carrying the rounding leftover so nothing is lost (at 23 xp per gp, 12 xp pays 1 gp and
+ * leaves the pool at -11).
+ *
+ * @return {gp earned, new pool}
+ */
 	static long[] convertXp(long pool, long xp, int xpPerGp)
 	{
 		return convertXp(pool, xp, Math.max(1, xpPerGp), 1.0);
@@ -276,12 +273,11 @@ public class GoldmanState
 		return gp;
 	}
 
-	/**
-	 * Pays gp for something that can only be paid once (a quest, a collection log item, a tier...).
-	 *
-	 * @param key a name for the thing being paid, unique to it; null for something that can repeat
-	 * @return the gp paid, 0 if it had been paid before (or there is nothing to pay)
-	 */
+/**
+ * Pays something that can only be paid once, claimed under {@code key} (null for something that can repeat).
+ *
+ * @return the gp paid, 0 if it had been paid before
+ */
 	public long award(String key, long gp)
 	{
 		if (gp <= 0)
@@ -375,11 +371,7 @@ public class GoldmanState
 		return idx >= 0 && idx < l.length && l[idx];
 	}
 
-	/**
-	 * The area's price from the areas file (size, what is there, usefulness, danger, earning potential - see
-	 * tools/price_areas.py) times the "Area costs" multiplier from the settings menu, rounded to the nearest 100. An area with no price
-	 * in the file costs its size in tiles x 65. Free areas cost 0.
-	 */
+/** The area's price from the areas file times the "Area costs" multiplier, rounded to 100 (65 gp a tile if the file has none; free areas cost 0). */
 	public long costOf(GoldmanArea a)
 	{
 		if (isFree(a))
@@ -447,7 +439,6 @@ public class GoldmanState
 		return null;
 	}
 
-	/** Testing helper. */
 	public void relock(GoldmanArea a)
 	{
 		synchronized (this)
@@ -482,7 +473,7 @@ public class GoldmanState
 		fire();
 	}
 
-	/** Testing helper: relock everything and zero the balance. */
+	/** Relocks everything and zeroes the balance. */
 	public void resetAll()
 	{
 		synchronized (this)

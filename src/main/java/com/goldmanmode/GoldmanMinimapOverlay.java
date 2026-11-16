@@ -28,10 +28,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-/**
- * Shows locked areas on the minimap: the inside is tinted and the border (wherever a locked area meets
- * ground that is not locked) is drawn as a line, the same borders the in-game barrier follows.
- */
+/** Shows locked areas on the minimap: a tint inside and a line along the same borders the in-game barrier follows. */
 @Singleton
 public class GoldmanMinimapOverlay extends Overlay
 {

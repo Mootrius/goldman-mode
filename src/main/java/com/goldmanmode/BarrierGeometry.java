@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The straight outline of every area, chopped into pieces of at most one tile, each remembering which area
- * (if any) lies on either side of it. Which pieces actually get a barrier depends on what is locked, so this
- * is built once and never changes. Because it follows the drawn outlines rather than tile edges, diagonal
- * borders get a straight barrier.
+ * The straight outline of every area in pieces of at most one tile, each remembering which area lies on either side.
+ * Built once: which pieces get a barrier depends on what is locked. Following the drawn outline rather than tile
+ * edges is what gives diagonal borders a straight barrier.
  */
 public class BarrierGeometry
 {
