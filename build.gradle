@@ -1,0 +1,62 @@
+plugins {
+	id 'java'
+}
+
+repositories {
+	mavenLocal()
+	maven {
+		url = 'https://repo.runelite.net'
+		content {
+			includeGroupByRegex("net\\.runelite.*")
+		}
+	}
+	mavenCentral()
+}
+
+def runeLiteVersion = 'latest.release'
+
+dependencies {
+	compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
+
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+	testImplementation 'junit:junit:4.13.2'
+	testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
+	// runClient also sideloads MQoL (com.mqol:mqol, built from ../../MQoL as an included build; see settings.gradle)
+	if (file('../../MQoL/build.gradle').exists())
+	{
+		testRuntimeOnly 'com.mqol:mqol'
+	}
+	// ...and Loot Labels (com.lootlabels:loot-labels, built from ../../LOOT_LABELS/loot-labels the same way)
+	if (file('../../LOOT_LABELS/loot-labels/build.gradle').exists())
+	{
+		testRuntimeOnly 'com.lootlabels:loot-labels'
+	}
+	testCompileOnly 'org.projectlombok:lombok:1.18.30'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+}
+
+group = 'com.goldmanmode'
+version = '0.1.0'
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	options.release.set(11)
+}
+
+// ./gradlew runClient  -> starts RuneLite in developer mode with this plugin loaded
+tasks.register('runClient', JavaExec) {
+	group = 'goldman'
+	description = 'Run RuneLite (developer mode) with the Goldman Mode plugin loaded'
+	classpath = sourceSets.test.runtimeClasspath
+	mainClass = 'com.goldmanmode.GoldmanModePluginTest'
+	args = ['--developer-mode', '--debug']
+	jvmArgs = ['-ea',
+		// macOS: RuneLite's fullscreen support needs these packages opened (fixes "fatal error starting RuneLite")
+		'--add-exports=java.desktop/com.apple.eawt=ALL-UNNAMED',
+		'--add-exports=java.desktop/com.apple.eawt.event=ALL-UNNAMED',
+		'--add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED',
+		'--add-opens=java.desktop/com.apple.eawt.event=ALL-UNNAMED',
+		'--add-opens=java.desktop/sun.awt=ALL-UNNAMED']
+}
