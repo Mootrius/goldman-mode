@@ -392,7 +392,7 @@ public class GoldmanState
 			return 0;
 		}
 		double base = a.getPrice() >= 0 ? a.getPrice() : a.getSize() * 65.0;
-		return Math.max(100L, Math.round(base * Settings.PRICE_MULTIPLIER / 10000.0 * m) * 100L);
+		return Math.max(100L, Math.round(base / 100.0 * m) * 100L);
 	}
 
 	public synchronized int unlockedCount()

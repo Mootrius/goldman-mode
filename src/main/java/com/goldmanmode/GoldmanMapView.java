@@ -48,17 +48,6 @@ final class GoldmanMapView
 		/** the player's tile, or null when not in the surface world */
 		WorldPoint player();
 
-		boolean sharpPixels();
-
-		boolean showBorders();
-
-		boolean fillLocked();
-
-		boolean showUnlockedBorders();
-
-		/** mouse wheel zoom speed, percent (100 = normal) */
-		int zoomSpeed();
-
 		/** buy (unlock) an area with the Goldman GP balance; called from the AWT thread */
 		void buy(GoldmanArea a);
 	}
@@ -67,7 +56,7 @@ final class GoldmanMapView
 	private static final Color OCEAN = new Color(12, 14, 20);
 	private static final double MAX_SCALE = 10;
 	/** how much one notch of the mouse wheel zooms (natural log) */
-	private static final double ZOOM_PER_NOTCH = 0.035;
+	private static final double ZOOM_PER_NOTCH = 0.021;
 	private static final Color LOCKED_FILL = new Color(220, 40, 40, 112);
 	private static final Color LOCKED_FILL_HOVER = new Color(255, 70, 70, 160);
 	private static final Color UNLOCKED_FILL_HOVER = new Color(255, 255, 255, 80);
@@ -284,7 +273,7 @@ final class GoldmanMapView
 			// from the target, so quick scrolling keeps adding up while the view eases toward it
 			// a fast flick can report several notches in one event: cap it so one event never jumps far
 			double rot = Math.max(-3, Math.min(3, e.getPreciseWheelRotation()));
-			zoomAt(e.getX(), e.getY(), Math.max(targetScale, 1e-6) * Math.exp(-rot * ZOOM_PER_NOTCH * GoldmanMapView.this.host.zoomSpeed() / 100.0));
+			zoomAt(e.getX(), e.getY(), Math.max(targetScale, 1e-6) * Math.exp(-rot * ZOOM_PER_NOTCH));
 		}
 		e.consume();
 		return e;
@@ -516,7 +505,7 @@ final class GoldmanMapView
 		int cy0 = (int) Math.ceil(vp.sy(world[3])), cy1 = (int) Math.floor(vp.sy(world[1]));
 		g.clipRect(cx0, cy0, cx1 - cx0, cy1 - cy0);
 		boolean upscaling = vp.scale * dpr > Math.pow(2, z) * 1.0001; // more screen pixels than picture pixels
-		Object interp = upscaling && host.sharpPixels() ? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+		Object interp = upscaling ? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
 			: RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interp);
 		for (int[] t : need)
@@ -641,7 +630,6 @@ final class GoldmanMapView
 
 	private void drawAreas(Graphics2D g, GoldmanArea hover)
 	{
-		boolean borders = host.showBorders(), fill = host.fillLocked(), unl = host.showUnlockedBorders();
 		AffineTransform at = new AffineTransform();
 		at.translate(vp.w / 2.0 - vp.cx * vp.scale, vp.h / 2.0 + vp.cy * vp.scale);
 		at.scale(vp.scale, -vp.scale);
@@ -663,39 +651,30 @@ final class GoldmanMapView
 			}
 			(host.isUnlocked(a) ? unlockedInView : lockedInView).add(a);
 		}
-		if (fill)
+		g.setColor(LOCKED_FILL);
+		for (GoldmanArea a : lockedInView)
 		{
-			g.setColor(LOCKED_FILL);
-			for (GoldmanArea a : lockedInView)
+			for (Path2D p : pathsOf(a))
 			{
-				for (Path2D p : pathsOf(a))
-				{
-					g.fill(at.createTransformedShape(p));
-				}
+				g.fill(at.createTransformedShape(p));
 			}
 		}
-		if (unl)
+		g.setStroke(unlockedStroke);
+		g.setColor(UNLOCKED_LINE);
+		for (GoldmanArea a : unlockedInView)
 		{
-			g.setStroke(unlockedStroke);
-			g.setColor(UNLOCKED_LINE);
-			for (GoldmanArea a : unlockedInView)
+			for (Path2D p : pathsOf(a))
 			{
-				for (Path2D p : pathsOf(a))
-				{
-					g.draw(at.createTransformedShape(p));
-				}
+				g.draw(at.createTransformedShape(p));
 			}
 		}
-		if (borders)
+		g.setStroke(lockedStroke);
+		g.setColor(LOCKED_LINE);
+		for (GoldmanArea a : lockedInView)
 		{
-			g.setStroke(lockedStroke);
-			g.setColor(LOCKED_LINE);
-			for (GoldmanArea a : lockedInView)
+			for (Path2D p : pathsOf(a))
 			{
-				for (Path2D p : pathsOf(a))
-				{
-					g.draw(at.createTransformedShape(p));
-				}
+				g.draw(at.createTransformedShape(p));
 			}
 		}
 		// the hovered area last, so its white outline sits on top of every neighbour's line

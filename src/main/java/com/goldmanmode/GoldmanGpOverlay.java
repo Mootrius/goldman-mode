@@ -37,11 +37,6 @@ public class GoldmanGpOverlay extends OverlayPanel
 			shown.reset(); // the first number after logging in shows at once
 			return null;
 		}
-		if (!Settings.SHOW_GP_OVERLAY)
-		{
-			shown.reset();
-			return null;
-		}
 		long now = System.currentTimeMillis();
 		shown.update(state.getBalance(), now);
 		panelComponent.setPreferredSize(new Dimension(110, 0));

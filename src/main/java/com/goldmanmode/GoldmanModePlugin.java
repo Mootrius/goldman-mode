@@ -59,7 +59,7 @@ import net.runelite.client.util.ImageUtil;
 @PluginDescriptor(
 	name = "Goldman Mode",
 	description = "Unlock Gielinor one area at a time by earning and spending Goldman GP!",
-	tags = {"ironman", "unlock", "areas", "goldman", "challenge"}
+	tags = {"ironman", "goldman", "unlock", "areas", "challenge", "restricted"}
 )
 public class GoldmanModePlugin extends Plugin
 {
@@ -154,36 +154,6 @@ public class GoldmanModePlugin extends Plugin
 					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", msg, null);
 				}
 			});
-		}
-
-		@Override
-		public boolean sharpPixels()
-		{
-			return Settings.MAP_SHARP_PIXELS;
-		}
-
-		@Override
-		public boolean showBorders()
-		{
-			return Settings.MAP_SHOW_BORDERS;
-		}
-
-		@Override
-		public boolean fillLocked()
-		{
-			return Settings.MAP_FILL_LOCKED;
-		}
-
-		@Override
-		public boolean showUnlockedBorders()
-		{
-			return Settings.MAP_SHOW_UNLOCKED_BORDERS;
-		}
-
-		@Override
-		public int zoomSpeed()
-		{
-			return Settings.MAP_ZOOM_SPEED;
 		}
 	};
 
@@ -366,7 +336,7 @@ public class GoldmanModePlugin extends Plugin
 	/** Writes "+N gp for what" in the chatbox (on the client thread) if payout messages are on. */
 	private void announce(ChatMessageType type, long gp, String what)
 	{
-		if (gp > 0 && Settings.ANNOUNCE_PAYOUTS)
+		if (gp > 0)
 		{
 			client.addChatMessage(type, "",
 				"<col=ffffff>Goldman Mode:</col> <col=ffff00>+" + QuantityFormatter.formatNumber(gp) + " gp for " + what + ".</col>", null);
@@ -735,7 +705,7 @@ public class GoldmanModePlugin extends Plugin
 	public void onMenuOptionClicked(MenuOptionClicked e)
 	{
 		// the world map icon beside the minimap opens our map instead of the game's
-		if (Settings.MAP_REPLACES_ORB && (e.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || e.getParam1() == InterfaceID.Orbs.WORLDMAP)
+		if ((e.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || e.getParam1() == InterfaceID.Orbs.WORLDMAP)
 			&& e.getMenuOption() != null && net.runelite.client.util.Text.removeTags(e.getMenuOption()).toLowerCase(java.util.Locale.ROOT).contains("world map"))
 		{
 			e.consume();

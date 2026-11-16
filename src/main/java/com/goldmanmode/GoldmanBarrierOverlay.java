@@ -53,10 +53,6 @@ public class GoldmanBarrierOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D g)
 	{
-		if (!Settings.SHOW_BARRIER)
-		{
-			return null;
-		}
 		Player me = client.getLocalPlayer();
 		if (me == null)
 		{

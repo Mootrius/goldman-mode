@@ -45,14 +45,8 @@ class ClogTooltip
 		{
 			return;
 		}
-		if (Settings.SHOW_QUEST_TOOLTIP)
-		{
-			questTooltip();
-		}
-		if (Settings.SHOW_CLOG_TOOLTIP)
-		{
-			clogTooltip();
-		}
+		questTooltip();
+		clogTooltip();
 	}
 
 	/**

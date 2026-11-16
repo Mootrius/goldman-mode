@@ -464,10 +464,7 @@ public class GoldmanAchievements
 			return;
 		}
 		log.info("Goldman GP +{} for {}", gp, what);
-		if (Settings.ANNOUNCE_PAYOUTS)
-		{
-			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "",
-				"<col=ffffff>Goldman Mode:</col> <col=ffff00>+" + QuantityFormatter.formatNumber(gp) + " gp for " + what + ".</col>", null);
-		}
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "",
+			"<col=ffffff>Goldman Mode:</col> <col=ffff00>+" + QuantityFormatter.formatNumber(gp) + " gp for " + what + ".</col>", null);
 	}
 }

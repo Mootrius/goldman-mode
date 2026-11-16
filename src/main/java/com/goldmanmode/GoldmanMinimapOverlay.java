@@ -114,7 +114,7 @@ public class GoldmanMinimapOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D g)
 	{
-		if (!Settings.SHOW_MINIMAP || Instances.isInstanced(client))
+		if (Instances.isInstanced(client))
 		{
 			return null;
 		}
