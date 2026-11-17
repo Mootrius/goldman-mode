@@ -1,13 +1,7 @@
 rootProject.name = 'goldman-mode'
 
-// Sideload the sibling MQoL and Loot Labels plugins into ./gradlew runClient when their folders are next to this
-// project's parent (/Volumes/Gigantor/MQoL and /Volumes/Gigantor/LOOT_LABELS/loot-labels). Each is skipped
-// silently if its folder isn't there.
-if (file('../../MQoL/build.gradle').exists())
+// Extra settings for this machine only (not committed)
+if (file('local.settings.gradle').exists())
 {
-	includeBuild('../../MQoL')
-}
-if (file('../../LOOT_LABELS/loot-labels/build.gradle').exists())
-{
-	includeBuild('../../LOOT_LABELS/loot-labels')
+	apply from: 'local.settings.gradle'
 }

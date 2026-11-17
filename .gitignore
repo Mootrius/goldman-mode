@@ -6,3 +6,5 @@ out/
 .DS_Store
 *.hprof
 /goldman-mode-*.jar
+local.gradle
+local.settings.gradle

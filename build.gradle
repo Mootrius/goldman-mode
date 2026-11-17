@@ -23,22 +23,18 @@ dependencies {
 
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation group: 'net.runelite', name: 'client', version: runeLiteVersion
-	// runClient also sideloads MQoL (com.mqol:mqol, built from ../../MQoL as an included build; see settings.gradle)
-	if (file('../../MQoL/build.gradle').exists())
-	{
-		testRuntimeOnly 'com.mqol:mqol'
-	}
-	// ...and Loot Labels (com.lootlabels:loot-labels, built from ../../LOOT_LABELS/loot-labels the same way)
-	if (file('../../LOOT_LABELS/loot-labels/build.gradle').exists())
-	{
-		testRuntimeOnly 'com.lootlabels:loot-labels'
-	}
 	testCompileOnly 'org.projectlombok:lombok:1.18.30'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 group = 'com.goldmanmode'
 version = '1.0.0'
+
+// Extra settings for this machine only (not committed)
+if (file('local.gradle').exists())
+{
+	apply from: 'local.gradle'
+}
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
