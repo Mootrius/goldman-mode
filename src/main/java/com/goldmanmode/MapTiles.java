@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.util.Filepath;
@@ -75,20 +77,16 @@ final class MapTiles
 	private final Set<Long> wantedKeys = new HashSet<>();
 	private volatile boolean running = true;
 	private volatile int failures;
-	private final Thread[] workers = new Thread[WORKERS];
+	private final ExecutorService executor;
+	private int active; // downloads running, guarded by lock
 
-	MapTiles(OkHttpClient http, Filepath dir, MapRegions regions, Runnable onChange)
+	MapTiles(OkHttpClient http, Filepath dir, MapRegions regions, Runnable onChange, ExecutorService executor)
 	{
 		this.http = http;
 		this.dir = dir;
 		this.regions = regions;
 		this.onChange = onChange;
-		for (int i = 0; i < WORKERS; i++)
-		{
-			workers[i] = new Thread(this::work, "goldman-map-tiles-" + i);
-			workers[i].setDaemon(true);
-			workers[i].start();
-		}
+		this.executor = executor;
 	}
 
 	/** the picture if it is in memory; never loads */
@@ -143,11 +141,8 @@ final class MapTiles
 				wanted.clear();
 				wantedKeys.clear();
 			}
-			if (!queue.isEmpty())
-			{
-				lock.notifyAll();
-			}
 		}
+		pump();
 	}
 
 	/** how many squares are being fetched or waiting */
@@ -175,76 +170,73 @@ final class MapTiles
 
 	void shutdown()
 	{
-		running = false;
+		running = false; // downloads already started finish by themselves
 		synchronized (lock)
 		{
-			lock.notifyAll();
-		}
-		for (Thread t : workers)
-		{
-			t.interrupt();
+			queue.clear();
 		}
 	}
 
-	private void work()
+	/** Starts downloads from the front of the queue until {@link #WORKERS} are running. */
+	private void pump()
 	{
-		while (running)
+		synchronized (lock)
 		{
-			long[] w;
-			long k;
-			synchronized (lock)
+			while (running && active < WORKERS && !queue.isEmpty())
 			{
-				while (running && queue.isEmpty())
-				{
-					try
-					{
-						lock.wait();
-					}
-					catch (InterruptedException e)
-					{
-						return;
-					}
-				}
-				if (!running)
-				{
-					return;
-				}
-				w = queue.pollFirst();
-				k = key((int) w[0], (int) w[1], (int) w[2]);
+				long[] w = queue.pollFirst();
+				long k = key((int) w[0], (int) w[1], (int) w[2]);
 				if (!loading.add(k))
 				{
 					continue;
 				}
-			}
-			try
-			{
-				BufferedImage img = load((int) w[0], (int) w[1], (int) w[2]);
-				if (img != null)
+				active++;
+				try
 				{
-					synchronized (cache)
-					{
-						cache.put(k, img);
-					}
-					failures = 0;
-					onChange.run();
+					executor.execute(() -> fetch(w, k));
 				}
-			}
-			catch (Exception e)
-			{
-				log.debug("map tile {} failed: {}", java.util.Arrays.toString(w), e.toString());
-				synchronized (lock)
-				{
-					failed.put(k, System.currentTimeMillis());
-				}
-				failures++;
-			}
-			finally
-			{
-				synchronized (lock)
+				catch (RejectedExecutionException e)
 				{
 					loading.remove(k);
+					active--;
+					return;
 				}
 			}
+		}
+	}
+
+	private void fetch(long[] w, long k)
+	{
+		try
+		{
+			BufferedImage img = load((int) w[0], (int) w[1], (int) w[2]);
+			if (img != null)
+			{
+				synchronized (cache)
+				{
+					cache.put(k, img);
+				}
+				failures = 0;
+				onChange.run();
+			}
+		}
+		catch (Exception e)
+		{
+			log.debug("map tile {} failed: {}", java.util.Arrays.toString(w), e.toString());
+			synchronized (lock)
+			{
+				failed.put(k, System.currentTimeMillis());
+			}
+			failures++;
+		}
+		finally
+		{
+			synchronized (lock)
+			{
+				loading.remove(k);
+				active--;
+			}
+			pump();
 		}
 	}
 

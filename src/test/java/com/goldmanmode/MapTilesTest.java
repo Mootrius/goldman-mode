@@ -5,6 +5,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import javax.imageio.ImageIO;
+import net.runelite.client.util.Filepath;
 import org.junit.Test;
 
 public class MapTilesTest
@@ -56,5 +65,28 @@ public class MapTilesTest
 		assertFalse(r.hasTile(-3, 20, 20));
 		double[] b = r.worldBounds();
 		assertTrue(b[0] < 3200 && b[2] > 3300 && b[1] < 3200 && b[3] > 3300);
+	}
+
+	@Test
+	public void loadsACachedSquareFromDiskOnTheExecutor() throws Exception
+	{
+		Path tmp = Files.createTempDirectory("goldman-tiles");
+		Files.createDirectories(tmp.resolve("2"));
+		ImageIO.write(new BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB), "png", tmp.resolve("2").resolve("0_50_50.png").toFile());
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		CountDownLatch loaded = new CountDownLatch(1);
+		MapTiles tiles = new MapTiles(null, Filepath.Unchecked.getRooted(tmp), MapRegions.load(), loaded::countDown, executor);
+		try
+		{
+			assertEquals(null, tiles.want(2, 50, 50));
+			tiles.endFrame();
+			assertTrue(loaded.await(5, TimeUnit.SECONDS));
+			assertTrue(tiles.peek(2, 50, 50) != null);
+		}
+		finally
+		{
+			tiles.shutdown();
+			executor.shutdownNow();
+		}
 	}
 }

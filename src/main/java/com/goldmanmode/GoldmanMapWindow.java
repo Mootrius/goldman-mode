@@ -3,6 +3,7 @@ package com.goldmanmode;
 import java.awt.Canvas;
 import java.awt.event.MouseEvent;
 import java.util.Locale;
+import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
@@ -35,6 +36,7 @@ class GoldmanMapWindow
 	private final MouseManager mouseManager;
 	private final KeyManager keyManager;
 	private final OkHttpClient okHttpClient;
+	private final ScheduledExecutorService executor;
 	private final GoldmanState state;
 	private final GoldmanModeConfig config;
 	private final GoldmanMapOverlay overlay;
@@ -46,13 +48,14 @@ class GoldmanMapWindow
 
 	@Inject
 	GoldmanMapWindow(Client client, ClientThread clientThread, MouseManager mouseManager, KeyManager keyManager,
-		OkHttpClient okHttpClient, GoldmanState state, GoldmanModeConfig config, GoldmanMapOverlay overlay)
+		OkHttpClient okHttpClient, ScheduledExecutorService executor, GoldmanState state, GoldmanModeConfig config, GoldmanMapOverlay overlay)
 	{
 		this.client = client;
 		this.clientThread = clientThread;
 		this.mouseManager = mouseManager;
 		this.keyManager = keyManager;
 		this.okHttpClient = okHttpClient;
+		this.executor = executor;
 		this.state = state;
 		this.config = config;
 		this.overlay = overlay;
@@ -157,7 +160,7 @@ class GoldmanMapWindow
 			mapTiles = new MapTiles(okHttpClient, dataDir.joinSegment("maptiles"),
 				regions, () ->
 				{
-				});
+				}, executor);
 			mapView = new GoldmanMapView(host, mapTiles, regions, this::close);
 			overlay.setView(mapView);
 		}
