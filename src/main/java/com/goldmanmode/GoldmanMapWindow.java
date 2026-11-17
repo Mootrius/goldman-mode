@@ -1,7 +1,6 @@
 package com.goldmanmode;
 
 import java.awt.Canvas;
-import java.awt.event.MouseEvent;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
@@ -169,19 +168,12 @@ class GoldmanMapWindow
 			return;
 		}
 		mapView.open();
-		Canvas canvas = client.getCanvas();
-		if (canvas != null)
-		{
-			// RuneLite draws its sidebar caret whenever the game last saw the mouse near the right edge. The map swallows
-			// mouse movement, so the game would keep the spot where the world map icon was clicked and show the caret the
-			// whole time: tell the game the mouse has left the window (before our own listeners are in line).
-			canvas.dispatchEvent(new MouseEvent(canvas, MouseEvent.MOUSE_EXITED, System.currentTimeMillis(), 0, -1, -1, 0, false));
-		}
 		// Not first in line: Stretched Mode's translator is registered first and rescales the mouse position to the
 		// game's own pixels for whoever comes after it, and that is the position the map is drawn in.
 		mouseManager.registerMouseListener(mapView.mouse);
 		mouseManager.registerMouseWheelListener(mapView.wheel);
 		keyManager.registerKeyListener(mapView.keys);
+		Canvas canvas = client.getCanvas();
 		if (canvas != null)
 		{
 			canvas.requestFocusInWindow(); // the sidebar button had the keyboard: the map needs it to hear keys

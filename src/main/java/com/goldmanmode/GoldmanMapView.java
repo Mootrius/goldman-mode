@@ -26,7 +26,7 @@ import net.runelite.client.input.MouseWheelListener;
 
 /**
  * The map drawn over the whole game view: smooth zoom and scrolling, area borders and a price tooltip. While open it
- * takes every mouse and key event. Events arrive on the AWT thread and drawing on the client thread, so everything
+ * takes clicks, scrolling and key presses. Events arrive on the AWT thread and drawing on the client thread, so everything
  * here is synchronized.
  */
 final class GoldmanMapView
@@ -229,12 +229,13 @@ final class GoldmanMapView
 		@Override
 		public MouseEvent mouseMoved(MouseEvent e)
 		{
+			// not consumed: the game has to keep seeing where the mouse is, or RuneLite's sidebar caret (drawn from the
+			// game's last mouse position) stays stuck at the world map icon
 			synchronized (GoldmanMapView.this)
 			{
 				mouseX = e.getX();
 				mouseY = e.getY();
 			}
-			e.consume();
 			return e;
 		}
 
@@ -245,14 +246,6 @@ final class GoldmanMapView
 			{
 				mouseX = mouseY = -1;
 			}
-			e.consume();
-			return e;
-		}
-
-		@Override
-		public MouseEvent mouseEntered(MouseEvent e)
-		{
-			e.consume();
 			return e;
 		}
 
