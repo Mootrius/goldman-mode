@@ -14,6 +14,7 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
@@ -36,6 +37,7 @@ class GoldmanMapWindow
 	private final KeyManager keyManager;
 	private final OkHttpClient okHttpClient;
 	private final GoldmanState state;
+	private final GoldmanModeConfig config;
 	private final GoldmanMapOverlay overlay;
 
 	private volatile WorldPoint playerPos;
@@ -44,7 +46,7 @@ class GoldmanMapWindow
 
 	@Inject
 	GoldmanMapWindow(Client client, ClientThread clientThread, MouseManager mouseManager, KeyManager keyManager,
-		OkHttpClient okHttpClient, GoldmanState state, GoldmanMapOverlay overlay)
+		OkHttpClient okHttpClient, GoldmanState state, GoldmanModeConfig config, GoldmanMapOverlay overlay)
 	{
 		this.client = client;
 		this.clientThread = clientThread;
@@ -52,15 +54,14 @@ class GoldmanMapWindow
 		this.keyManager = keyManager;
 		this.okHttpClient = okHttpClient;
 		this.state = state;
+		this.config = config;
 		this.overlay = overlay;
 	}
 
-	/** Adds "Open Goldman Map" under the world map icon's own options, so a plain left click still opens the game's map. */
+	/** Adds "Open Goldman Map" to the world map icon's right-click menu. */
 	void onMenuEntryAdded(MenuEntryAdded e)
 	{
-		MenuEntry added = e.getMenuEntry();
-		boolean worldMapIcon = added.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || added.getParam1() == InterfaceID.Orbs.WORLDMAP;
-		if (!worldMapIcon || !Text.removeTags(added.getOption()).toLowerCase(Locale.ROOT).contains("world map"))
+		if (!isWorldMapEntry(e.getMenuEntry()))
 		{
 			return;
 		}
@@ -72,6 +73,23 @@ class GoldmanMapWindow
 			}
 		}
 		client.getMenu().createMenuEntry(-1).setOption(MENU_OPTION).setTarget(MENU_TARGET).setType(MenuAction.RUNELITE).onClick(m -> openLater());
+	}
+
+	/** With "Default to Goldman Map" on, a plain left click on the world map icon opens the Goldman map instead. */
+	void onMenuOptionClicked(MenuOptionClicked e)
+	{
+		if (config.defaultToGoldmanMap() && !client.isMenuOpen() && isWorldMapEntry(e.getMenuEntry()))
+		{
+			e.consume();
+			openLater();
+		}
+	}
+
+	/** One of the world map icon's own menu entries ("Floating World Map" and so on), not ours. */
+	private static boolean isWorldMapEntry(MenuEntry entry)
+	{
+		boolean icon = entry.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || entry.getParam1() == InterfaceID.Orbs.WORLDMAP;
+		return icon && Text.removeTags(entry.getOption() + " " + entry.getTarget()).toLowerCase(Locale.ROOT).contains("world map");
 	}
 
 	/** The player's tile for the "you are here" marker, or null when not in the surface world. */

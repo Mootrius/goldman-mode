@@ -323,6 +323,7 @@ public class GoldmanModePlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked e)
 	{
+		mapWindow.onMenuOptionClicked(e);
 		clickBlocker.onMenuOptionClicked(e);
 	}
 }

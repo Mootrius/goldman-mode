@@ -6,7 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
 /**
- * The plugin's settings menu: click blocking, the area cost multiplier and the payout multipliers. Everything else is
+ * The plugin's settings menu: click blocking, the area cost multiplier, the payout multipliers and the map default. Everything else is
  * fixed (see {@link Settings}). This group is also where the plugin keeps your Goldman GP balance and unlocked areas.
  * <p>
  * Each multiplier is a number box that starts at 1.0 and moves by 0.1 with its up and down arrows (you can also type
@@ -26,8 +26,17 @@ public interface GoldmanModeConfig extends Config
 	@ConfigSection(name = "Payout multipliers", description = "Makes payouts give more or less than the base 1.0 factor", position = 2)
 	String PAYOUT_MULTIPLIERS = "payoutMultipliers";
 
+	@ConfigSection(name = "Map default", description = "Choose whether the Goldman Map replaces the default world map", position = 3)
+	String MAP_DEFAULT = "mapDefault";
+
 	@ConfigItem(keyName = "blockLockedClicks", name = "Block clicks in locked areas", description = "Walking to, and clicking NPCs, objects, items, and players in locked areas does nothing", section = BLOCKED_CLICKS, position = 0)
 	default boolean blockLockedClicks()
+	{
+		return true;
+	}
+
+	@ConfigItem(keyName = "defaultToGoldmanMap", name = "Default to Goldman Map", description = "Makes left-clicking the world map show the Goldman Map", section = MAP_DEFAULT, position = 0)
+	default boolean defaultToGoldmanMap()
 	{
 		return true;
 	}
