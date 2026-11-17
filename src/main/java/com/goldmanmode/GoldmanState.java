@@ -1,7 +1,5 @@
 package com.goldmanmode;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,8 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.RuneLite;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.util.Filepath;
 
 /** The areas, which of them are unlocked, and the GP balance; persisted in the RuneLite profile config. */
 @Slf4j
@@ -27,8 +25,6 @@ public class GoldmanState
 	static final String KEY_XP_POOL = "xpPool";
 	/** quests, collection log items, combat tasks and diary / combat tiers that have already been paid, so nothing pays twice */
 	static final String KEY_CLAIMED = "claimed";
-	/** drop a file here to use your own areas without rebuilding the plugin */
-	public static final File OVERRIDE_FILE = new File(new File(RuneLite.RUNELITE_DIR, "goldman-mode"), "areas.json");
 
 	/** the kinds of payout the settings menu can multiply */
 	public enum Payout
@@ -66,20 +62,22 @@ public class GoldmanState
 
 	// ---------------------------------------------------------------- loading
 
-	public void load()
+	/** @param dataDir the plugin's folder: an areas.json in it is used instead of the built-in areas */
+	public void load(Filepath dataDir)
 	{
 		AreaIndex idx = null;
 		String src = "built-in";
-		if (OVERRIDE_FILE.isFile())
+		Filepath override = dataDir.joinSegment("areas.json");
+		if (override.isFile())
 		{
-			try (InputStream in = new FileInputStream(OVERRIDE_FILE))
+			try (InputStream in = override.openInputStream())
 			{
 				idx = AreaIndex.load(in);
-				src = OVERRIDE_FILE.getPath();
+				src = override.toString();
 			}
 			catch (Exception e)
 			{
-				log.warn("Could not read {}, using built-in areas", OVERRIDE_FILE, e);
+				log.warn("Could not read {}, using built-in areas", override, e);
 			}
 		}
 		if (idx == null)

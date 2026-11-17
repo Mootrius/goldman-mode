@@ -2,7 +2,6 @@ package com.goldmanmode;
 
 import java.awt.Canvas;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,10 +15,10 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.gameval.InterfaceID;
-import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
+import net.runelite.client.util.Filepath;
 import net.runelite.client.util.Text;
 import okhttp3.OkHttpClient;
 
@@ -41,6 +40,7 @@ class GoldmanMapWindow
 	private final GoldmanMapOverlay overlay;
 
 	private volatile WorldPoint playerPos;
+	private Filepath dataDir;
 	private MapTiles mapTiles;
 	private GoldmanMapView mapView;
 
@@ -90,6 +90,12 @@ class GoldmanMapWindow
 	{
 		boolean icon = entry.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || entry.getParam1() == InterfaceID.Orbs.WORLDMAP;
 		return icon && Text.removeTags(entry.getOption() + " " + entry.getTarget()).toLowerCase(Locale.ROOT).contains("world map");
+	}
+
+	/** The plugin's data folder, where the map pictures are cached. */
+	void setDataDirectory(Filepath dir)
+	{
+		dataDir = dir;
 	}
 
 	/** The player's tile for the "you are here" marker, or null when not in the surface world. */
@@ -148,7 +154,7 @@ class GoldmanMapWindow
 		if (mapView == null)
 		{
 			MapRegions regions = MapRegions.load();
-			mapTiles = new MapTiles(okHttpClient, new File(new File(RuneLite.RUNELITE_DIR, "goldman-mode"), "maptiles"),
+			mapTiles = new MapTiles(okHttpClient, dataDir.joinSegment("maptiles"),
 				regions, () ->
 				{
 				});

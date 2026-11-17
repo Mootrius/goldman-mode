@@ -37,12 +37,14 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.Filepath;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.client.util.Text;
 
 @Slf4j
 @PluginDescriptor(
 	name = "Goldman Mode",
+	internalName = "goldman-mode",
 	description = "Unlock Gielinor one area at a time by earning and spending Goldman GP!",
 	tags = {"ironman", "goldman", "unlock", "areas", "challenge", "restricted"}
 )
@@ -84,9 +86,11 @@ public class GoldmanModePlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp()
+	protected void startUp() throws Exception
 	{
-		state.load();
+		Filepath dataDir = getPluginDirectory();
+		mapWindow.setDataDirectory(dataDir);
+		state.load(dataDir);
 		BufferedImage icon = ImageUtil.loadImageResource(GoldmanModePlugin.class, "icon_16.png");
 		navButton = NavigationButton.builder()
 			.tooltip("Goldman Mode")

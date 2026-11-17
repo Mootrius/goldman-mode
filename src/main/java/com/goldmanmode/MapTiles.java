@@ -2,10 +2,8 @@ package com.goldmanmode;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.util.Filepath;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -55,7 +54,7 @@ final class MapTiles
 	}
 
 	private final OkHttpClient http; // null: disk only
-	private final File dir;
+	private final Filepath dir;
 	private final MapRegions regions;
 	private final Runnable onChange;
 
@@ -78,7 +77,7 @@ final class MapTiles
 	private volatile int failures;
 	private final Thread[] workers = new Thread[WORKERS];
 
-	MapTiles(OkHttpClient http, File dir, MapRegions regions, Runnable onChange)
+	MapTiles(OkHttpClient http, Filepath dir, MapRegions regions, Runnable onChange)
 	{
 		this.http = http;
 		this.dir = dir;
@@ -249,18 +248,21 @@ final class MapTiles
 		}
 	}
 
-	private File fileOf(int z, int tx, int ty)
+	private Filepath fileOf(int z, int tx, int ty)
 	{
-		return new File(new File(dir, Integer.toString(z)), "0_" + tx + "_" + ty + ".png");
+		return dir.joinSegment(Integer.toString(z)).joinSegment("0_" + tx + "_" + ty + ".png");
 	}
 
 	private BufferedImage load(int z, int tx, int ty) throws IOException
 	{
-		File f = fileOf(z, tx, ty);
+		Filepath f = fileOf(z, tx, ty);
 		byte[] data = null;
-		if (f.isFile() && f.length() > 0)
+		if (f.isFile() && f.size() > 0)
 		{
-			data = Files.readAllBytes(f.toPath());
+			try (InputStream in = f.openInputStream())
+			{
+				data = in.readAllBytes();
+			}
 		}
 		else if (http != null)
 		{
@@ -283,10 +285,11 @@ final class MapTiles
 			{
 				throw new IOException("not a picture");
 			}
-			f.getParentFile().mkdirs();
-			File tmp = new File(f.getPath() + "." + java.util.UUID.randomUUID() + ".part");
-			Files.write(tmp.toPath(), data);
-			Files.move(tmp.toPath(), f.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			f.getParent().createDirectories();
+			Filepath tmp = f.getParent().joinSegment(f.getFileName() + "." + java.util.UUID.randomUUID() + ".part");
+			tmp.write(data);
+			f.deleteIfExists();
+			tmp.moveTo(f);
 			return test;
 		}
 		if (data == null)
@@ -296,7 +299,7 @@ final class MapTiles
 		BufferedImage img = decode(data);
 		if (img == null)
 		{
-			f.delete(); // broken file: fetch it again next time
+			f.deleteIfExists(); // broken file: fetch it again next time
 		}
 		return img;
 	}
