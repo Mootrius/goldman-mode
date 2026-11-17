@@ -30,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -59,6 +60,9 @@ public class GoldmanPanel extends PluginPanel
 	private final GoldmanState state;
 
 	private final JLabel balanceLabel = new JLabel("", SwingConstants.CENTER);
+	/** ticks the balance up to a new value, like the on-screen overlay; the timer runs only while it is moving */
+	private final CountUp balanceShown = new CountUp();
+	private final Timer balanceTimer = new Timer(20, e -> showBalance());
 	private final JLabel progressLabel = new JLabel("", SwingConstants.CENTER);
 	private final JTextField amountField = darkField(false, true);
 	private final JTextField search = darkField(true, false);
@@ -162,6 +166,7 @@ public class GoldmanPanel extends PluginPanel
 	void shutDown()
 	{
 		state.removeListener(listener);
+		balanceTimer.stop();
 	}
 
 	private static Component Box(int h)
@@ -532,10 +537,27 @@ public class GoldmanPanel extends PluginPanel
 
 	void refresh()
 	{
-		balanceLabel.setText(QuantityFormatter.formatNumber(state.getBalance()) + " gp");
+		showBalance();
 		int total = state.getIndex().getAreas().size();
 		progressLabel.setText(state.unlockedCount() + " / " + total + " areas unlocked");
 		refreshList();
+	}
+
+	private void showBalance()
+	{
+		long now = System.currentTimeMillis();
+		long balance = state.getBalance();
+		balanceShown.update(balance, now);
+		long shown = balanceShown.current(now);
+		balanceLabel.setText(QuantityFormatter.formatNumber(shown) + " gp");
+		if (shown == balance)
+		{
+			balanceTimer.stop();
+		}
+		else if (!balanceTimer.isRunning())
+		{
+			balanceTimer.start();
+		}
 	}
 
 	private void refreshList()
