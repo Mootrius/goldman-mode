@@ -20,13 +20,13 @@ public interface GoldmanModeConfig extends Config
 	@ConfigSection(name = "Blocked clicks", description = "Whether the plugin stops you from interacting with locked areas", position = 0)
 	String BLOCKED_CLICKS = "blockedClicks";
 
-	@ConfigSection(name = "Cost multiplier", description = "Makes areas cost more or less than base 1.0 factor", position = 1)
+	@ConfigSection(name = "Cost multiplier", description = "Makes areas cost more or less than base 1.0 factor", position = 2)
 	String COST_MULTIPLIER = "costMultiplier";
 
-	@ConfigSection(name = "Payout multipliers", description = "Makes payouts give more or less than the base 1.0 factor", position = 2)
+	@ConfigSection(name = "Payout multipliers", description = "Makes payouts give more or less than the base 1.0 factor", position = 3)
 	String PAYOUT_MULTIPLIERS = "payoutMultipliers";
 
-	@ConfigSection(name = "Map default", description = "Choose whether the Goldman Map replaces the default world map", position = 3)
+	@ConfigSection(name = "Map default", description = "Choose whether the Goldman Map replaces the default world map", position = 1)
 	String MAP_DEFAULT = "mapDefault";
 
 	@ConfigItem(keyName = "blockLockedClicks", name = "Block clicks in locked areas", description = "Walking to, and clicking NPCs, objects, items, and players in locked areas does nothing", section = BLOCKED_CLICKS, position = 0)
