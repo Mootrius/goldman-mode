@@ -26,7 +26,9 @@ import okhttp3.OkHttpClient;
 @Singleton
 class GoldmanMapWindow
 {
-	private static final String MENU_OPTION = "Open Goldman map";
+	private static final String MENU_OPTION = "Open";
+	/** orange, like the other interface names in the menu */
+	private static final String MENU_TARGET = "<col=ff9040>Goldman Map</col>";
 
 	private final Client client;
 	private final ClientThread clientThread;
@@ -53,7 +55,7 @@ class GoldmanMapWindow
 		this.overlay = overlay;
 	}
 
-	/** Adds "Open Goldman map" under the world map icon's own options, so a plain left click still opens the game's map. */
+	/** Adds "Open Goldman Map" under the world map icon's own options, so a plain left click still opens the game's map. */
 	void onMenuEntryAdded(MenuEntryAdded e)
 	{
 		MenuEntry added = e.getMenuEntry();
@@ -64,12 +66,12 @@ class GoldmanMapWindow
 		}
 		for (MenuEntry m : client.getMenu().getMenuEntries())
 		{
-			if (MENU_OPTION.equals(m.getOption()))
+			if (MENU_TARGET.equals(m.getTarget()))
 			{
 				return;
 			}
 		}
-		client.getMenu().createMenuEntry(-1).setOption(MENU_OPTION).setType(MenuAction.RUNELITE).onClick(m -> openLater());
+		client.getMenu().createMenuEntry(-1).setOption(MENU_OPTION).setTarget(MENU_TARGET).setType(MenuAction.RUNELITE).onClick(m -> openLater());
 	}
 
 	/** The player's tile for the "you are here" marker, or null when not in the surface world. */
