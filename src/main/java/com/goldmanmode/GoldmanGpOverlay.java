@@ -19,22 +19,24 @@ public class GoldmanGpOverlay extends OverlayPanel
 {
 	private final Client client;
 	private final GoldmanState state;
+	private final GoldmanModeConfig config;
 	private final CountUp shown = new CountUp();
 
 	@Inject
-	GoldmanGpOverlay(Client client, GoldmanState state)
+	GoldmanGpOverlay(Client client, GoldmanState state, GoldmanModeConfig config)
 	{
 		this.client = client;
 		this.state = state;
+		this.config = config;
 		setPosition(OverlayPosition.TOP_LEFT);
 	}
 
 	@Override
 	public Dimension render(Graphics2D g)
 	{
-		if (client.getGameState() != GameState.LOGGED_IN)
+		if (!config.showGpOverlay() || client.getGameState() != GameState.LOGGED_IN)
 		{
-			shown.reset(); // the first number after logging in shows at once
+			shown.reset(); // the first number after logging in (or turning the overlay on) shows at once
 			return null;
 		}
 		long now = System.currentTimeMillis();

@@ -6,7 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
 /**
- * The plugin's settings menu: click blocking, the area cost multiplier, the payout multipliers and the map default. Everything else is
+ * The plugin's settings menu: miscellaneous behavior, the area cost multiplier and the payout multipliers. Everything else is
  * fixed (see {@link Settings}). This group is also where the plugin keeps your Goldman GP balance and unlocked areas.
  * <p>
  * Each multiplier is a number box that starts at 1.0 and moves by 0.1 with its up and down arrows (you can also type
@@ -17,26 +17,29 @@ public interface GoldmanModeConfig extends Config
 {
 	String GROUP = "goldmanmode";
 
-	@ConfigSection(name = "Blocked clicks", description = "Whether the plugin stops you from interacting with locked areas", position = 0)
-	String BLOCKED_CLICKS = "blockedClicks";
+	@ConfigSection(name = "Behavior", description = "Controls various miscellaneous behaviors of the plugin", position = 0)
+	String BEHAVIOR = "behavior";
 
-	@ConfigSection(name = "Cost multiplier", description = "Makes areas cost more or less than base 1.0 factor", position = 2)
+	@ConfigSection(name = "Cost multiplier", description = "Makes areas cost more or less than base 1.0 factor", position = 1)
 	String COST_MULTIPLIER = "costMultiplier";
 
-	@ConfigSection(name = "Payout multipliers", description = "Makes payouts give more or less than the base 1.0 factor", position = 3)
+	@ConfigSection(name = "Payout multipliers", description = "Makes payouts give more or less than the base 1.0 factor", position = 2)
 	String PAYOUT_MULTIPLIERS = "payoutMultipliers";
 
-	@ConfigSection(name = "Map default", description = "Choose whether the Goldman Map replaces the default world map", position = 1)
-	String MAP_DEFAULT = "mapDefault";
-
-	@ConfigItem(keyName = "blockLockedClicks", name = "Block clicks in locked areas", description = "Walking to, and clicking NPCs, objects, items, and players in locked areas does nothing", section = BLOCKED_CLICKS, position = 0)
+	@ConfigItem(keyName = "blockLockedClicks", name = "Block clicks in locked areas", description = "Walking to, and clicking NPCs, objects, items, and players in locked areas does nothing", section = BEHAVIOR, position = 0)
 	default boolean blockLockedClicks()
 	{
 		return true;
 	}
 
-	@ConfigItem(keyName = "defaultToGoldmanMap", name = "Default to Goldman Map", description = "Makes left-clicking the world map show the Goldman Map", section = MAP_DEFAULT, position = 0)
+	@ConfigItem(keyName = "defaultToGoldmanMap", name = "Default to Goldman Map", description = "Makes left-clicking the world map show the Goldman Map", section = BEHAVIOR, position = 1)
 	default boolean defaultToGoldmanMap()
+	{
+		return true;
+	}
+
+	@ConfigItem(keyName = "showGpOverlay", name = "Show Goldman GP overlay", description = "Shows the auto-updating Goldman GP overlay on the screen", section = BEHAVIOR, position = 2)
+	default boolean showGpOverlay()
 	{
 		return true;
 	}
