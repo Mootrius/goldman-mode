@@ -32,6 +32,8 @@ final class MapTiles
 	static final int MIN_Z = -3;
 	static final int MAX_Z = 4;
 	static final String URL = "https://mejrs.github.io/layers_osrs/mapsquares/-1/%d/0_%d_%d.png";
+	/** says who is asking and where to reach the author, as the map server's owner would want */
+	static final String USER_AGENT = "Goldman Mode RuneLite plugin (https://github.com/mootrius/goldman-mode)";
 	private static final int MAX_CACHED = 420;
 	private static final long RETRY_MS = 20_000;
 	private static final int WORKERS = 4;
@@ -258,7 +260,7 @@ final class MapTiles
 		}
 		else if (http != null)
 		{
-			Request req = new Request.Builder().url(String.format(URL, z, tx, ty)).build();
+			Request req = new Request.Builder().url(String.format(URL, z, tx, ty)).header("User-Agent", USER_AGENT).build();
 			try (Response resp = http.newCall(req).execute())
 			{
 				if (resp.code() == 404)
