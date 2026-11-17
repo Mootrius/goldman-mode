@@ -3,23 +3,31 @@ package com.goldmanmode;
 import java.awt.Canvas;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
+import net.runelite.client.util.Text;
 import okhttp3.OkHttpClient;
 
 /** Opens and closes the Goldman world map and wires it up to the game. The map itself is {@link GoldmanMapView}. */
 @Singleton
 class GoldmanMapWindow
 {
+	private static final String MENU_OPTION = "Open Goldman map";
+
 	private final Client client;
 	private final ClientThread clientThread;
 	private final MouseManager mouseManager;
@@ -43,6 +51,25 @@ class GoldmanMapWindow
 		this.okHttpClient = okHttpClient;
 		this.state = state;
 		this.overlay = overlay;
+	}
+
+	/** Adds "Open Goldman map" under the world map icon's own options, so a plain left click still opens the game's map. */
+	void onMenuEntryAdded(MenuEntryAdded e)
+	{
+		MenuEntry added = e.getMenuEntry();
+		boolean worldMapIcon = added.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || added.getParam1() == InterfaceID.Orbs.WORLDMAP;
+		if (!worldMapIcon || !Text.removeTags(added.getOption()).toLowerCase(Locale.ROOT).contains("world map"))
+		{
+			return;
+		}
+		for (MenuEntry m : client.getMenu().getMenuEntries())
+		{
+			if (MENU_OPTION.equals(m.getOption()))
+			{
+				return;
+			}
+		}
+		client.getMenu().createMenuEntry(-1).setOption(MENU_OPTION).setType(MenuAction.RUNELITE).onClick(m -> openLater());
 	}
 
 	/** The player's tile for the "you are here" marker, or null when not in the surface world. */

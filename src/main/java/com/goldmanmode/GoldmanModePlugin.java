@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.IdentityHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
@@ -28,7 +27,6 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -319,19 +317,12 @@ public class GoldmanModePlugin extends Plugin
 	public void onMenuEntryAdded(MenuEntryAdded e)
 	{
 		clickBlocker.onMenuEntryAdded(e);
+		mapWindow.onMenuEntryAdded(e);
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked e)
 	{
-		// the world map icon beside the minimap opens our map instead of the game's
-		if ((e.getParam1() == InterfaceID.Orbs.ORB_WORLDMAP || e.getParam1() == InterfaceID.Orbs.WORLDMAP)
-			&& e.getMenuOption() != null && Text.removeTags(e.getMenuOption()).toLowerCase(Locale.ROOT).contains("world map"))
-		{
-			e.consume();
-			mapWindow.openLater();
-			return;
-		}
 		clickBlocker.onMenuOptionClicked(e);
 	}
 }
