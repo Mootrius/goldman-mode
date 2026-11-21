@@ -14,8 +14,8 @@ public class PayoutsTest
 	@Test
 	public void totalsMatchTheSpreadsheet()
 	{
-		assertEquals(189, p.questCount());
-		assertEquals(2 * 50_195_000L, p.questTotal()); // quests pay double
+		assertEquals(191, p.questCount());
+		assertEquals(2 * 50_530_000L, p.questTotal()); // quests pay double
 		assertEquals(2 * 50_000L, p.diary("easy").bonus); // diary tasks and tier bonuses both pay double
 		assertEquals(2 * 10_000L, p.diary("easy").task);
 		assertEquals(1_000_000L, p.combat("easy").bonus); // combat achievement tier bonuses: 1m up to 100m, curved between
@@ -113,6 +113,18 @@ public class PayoutsTest
 		assertEquals(p.quest("Vampyre Slayer"), p.quest("A Shell of a Friend"));
 		assertEquals(100_000, p.quest("Daddy's Home"));
 		assertEquals(26_000, p.quest("A Shell of a Friend"));
+	}
+
+	@Test
+	public void questMonthWeekThreeQuestsPayLikeTheirLengthAndDifficulty()
+	{
+		// A New Leaf is Intermediate / Short (like The Corsair Curse), Rag and Bone Man III Experienced / Medium (like Rag and Bone Man II)
+		assertEquals(p.quest("The Corsair Curse"), p.quest("A New Leaf"));
+		assertEquals(p.quest("Rag and Bone Man II"), p.quest("Rag and Bone Man III"));
+		assertEquals(130_000, p.quest("A New Leaf"));
+		assertEquals(540_000, p.quest("Rag and Bone Man III"));
+		assertEquals(540_000, p.questIn("Quest complete: Rag and Bone Man III").gp);
+		assertEquals(270_000 * 2, p.questIn("Quest complete: Rag and Bone Man II").gp);
 	}
 
 	@Test
