@@ -28,7 +28,7 @@ dependencies {
 }
 
 group = 'com.goldmanmode'
-version = '1.0.0'
+version = '1.0.1'
 
 // Extra settings for this machine only (not committed)
 if (file('local.gradle').exists())
